@@ -38,19 +38,19 @@ app.post('/api/user', payloadParser ,(req: any, res: any): void => {
 })
 
 app.get('/api/auth', (req: any, res: any): void => {
-    const authHeader = req.header('Authorization');
-    
+    const secret: any = process.env.SECRET;
+    const authHeader: string = req.header('Authorization');
+    try {
+        const decoded: any = jwt.verify(authHeader, secret);
+        res.json(decoded);
+    } catch(err) {
+        const fail: any = {
+            message: 'Token invalid',
+            success: false
+        }
+        res.json(fail)
+    }
 
-    jwt.verify(authHeader, process.env.SECRET as string, (err: any, result: any) => {
-        if(err) console.log(err);
-        const success = {
-            message: 'Token is match!',
-            result: result
-        };
-
-        res.json(success);
-
-    })
 })  
 
 app.listen(port, (): void => {
